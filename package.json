@@ -1,14 +1,14 @@
 {
-  "name": "gpc-template",
-  "version": "0.0.1",
-  "description": "This repository is a template to create precompilers for GherKing.",
+  "name": "gpc-remove-duplicates",
+  "version": "1.0.0",
+  "description": "This GherKing Precompiler is responsible to have only reasonable amount of tags and/or rows in each feature file.",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "build": "npm run buildUpdate && npm test && npm run typedoc",
     "buildUpdate": "npm run clean && npm run compile && npm run copyToDist",
     "copyToDist": "copyfiles -f *.txt *.md package.json dist",
-    "typedoc": "typedoc --out ./docs ./src && touch ./docs/.nojekyll",
+    "typedoc": "typedoc --out ./docs ./src && touch ./docs/.nojekll",
     "clean": "rimraf ./dist ./docs ./reports ./coverage",
     "test": "cross-env JEST_JUNIT_OUTPUT_DIR=./reports jest --coverage",
     "lint": "eslint . --ext .ts --fix",
@@ -16,21 +16,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gherking/gpc-template.git"
+    "url": "git+https://github.com/gherking/gpc-remove-duplicates.git"
   },
   "keywords": [
     "gherkin",
     "gherking",
     "precompiler",
-    "feature",
-    "file"
+    "feature file"
   ],
-  "author": "GherKing",
+  "author": "GherKing (https://github.com/gherking)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/gherking/gpc-template/issues"
+    "url": "https://github.com/gherking/gpc-remove-duplicates/issues"
   },
-  "homepage": "https://github.com/gherking/gpc-template#readme",
+  "homepage": "https://github.com/gherking/gpc-remove-duplicates#readme",
   "files": [
     "**/*.js",
     "**/*.d.ts",
@@ -57,11 +56,8 @@
   },
   "dependencies": {
     "debug": "^4.3.1",
-    "gherkin-ast": "^3.0.1",
-    "gherking": "^0.0.3"
-  },
-  "resolutions": {
-    "gherkin-ast": "3.0.1"
+    "gherkin-ast": "^3.0.2",
+    "gherking": "1.0.0-beta.*"
   },
   "jest": {
     "reporters": [

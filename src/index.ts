@@ -1,28 +1,38 @@
 import { PreCompiler } from "gherking";
-import { /* TODO */ } from "gherkin-ast";
+import { Tag } from "gherkin-ast";
+import { RemoveDuplicatesOptions } from "./types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const debug = require("debug")("gpc:template");
+const debug = require("debug")("gpc:remove-duplicates");
 
-// TODO: Add implementation of your precompiler
-class Template implements PreCompiler {
-    constructor() {
-        debug("Intialize");
+const DEFAULT_CONFIG: RemoveDuplicatesOptions = {
+    processRows: false,
+    processTags: true,
+    verbose: true,
+};
+
+interface HasTag {
+    tags?: Tag[];
+}
+
+class RemoveDuplicates implements PreCompiler {
+    private options: RemoveDuplicatesOptions;
+
+    constructor(options?: Partial<RemoveDuplicatesOptions>) {
+        this.options = {
+            ...DEFAULT_CONFIG,
+            ...(options || {}),
+        };
     }
+
+    private hasTag(element: HasTag, tagName: string): boolean {
+        if (!Array.isArray(element.tags) || !element.tags.length) {
+            return false;
+        }
+        return element.tags.some(tag => tag.name === tagName);
+    }
+
+    private filterTags(element: HasTag, parent: any):
 }
 
 // IMPORTANT: the precompiler class MUST be the export!
-export = Template;
-/*
- * @example:
- * class MyPrecompiler implements PreCompiler {
- *   constructor(config) {
- *     super();
- *     this.config = config;
- *   }
- * 
- *   onScenario(scenario) {
- *     // doing smth with scenario
- *   }
- * }
- * export = MyPrecompiler
- */
+export = RemoveDuplicates;
