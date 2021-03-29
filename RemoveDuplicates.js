@@ -24,44 +24,6 @@ const removeDuplicates = array => Array.from(new Set(array));
  * @extends DefaultConfig
  */
 class RemoveDuplicates extends DefaultConfig {
-    /**
-     * @constructor
-     * @param {RemoveDuplicatesConfiguration} config 
-     */
-    constructor(config) {
-        super();
-        /** @member {RemoveDuplicatesConfiguration} */
-        this.config = Object.assign({}, DEFAULT_CONFIG, config || {});
-
-        /** @member {Function} */
-        this.logTag = this._getLogger(this.config.processTags);
-        /** @member {Function} */
-        this.logRow = this._getLogger(this.config.processRows);
-    }
-
-    /**
-     * Creates an appropriate logger, based on configuration.
-     * @private
-     * @param {boolean} enabled 
-     * @returns {Function}
-     */
-    _getLogger(enabled) {
-        return this.config.verbose ? (...args) => console[enabled ? 'log' : 'warn'].apply(console, args) : () => null;
-    }
-
-    /**
-     * Checkes whether the given object has a tag with given name.
-     * @private
-     * @param {Scenario|ScenarioOutline|Examples|Feature} element 
-     * @param {string} tagName 
-     * @returns {boolean}
-     */
-    _hasTag(element, tagName) {
-        if (!element.tags || !element.tags.length) {
-            return false;
-        }
-        return element.tags.some(tag => tag.name === tagName);
-    }
 
     /**
      * Removes duplicated tags from the given object.
