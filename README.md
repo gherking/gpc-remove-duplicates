@@ -26,7 +26,7 @@ compiler.save('./features/dist/login.feature', ast, {
 ```typescript
 'use strict';
 import {load, process, save} from "gherking";
-import {remove-duplicates} from "gpc-remove-duplicates";
+import RemoveDuplicates from "gpc-remove-duplicates";
 
 let ast = load("./features/src/login.feature");
 ast = process(
