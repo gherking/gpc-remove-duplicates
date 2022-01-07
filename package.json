@@ -1,7 +1,7 @@
 {
   "name": "gpc-remove-duplicates",
   "version": "1.0.0",
-  "description": "This GherKing Precompiler is responsible to have only reasonable amount of tags and/or rows in each feature file.",
+  "description": "This GherKing precompiler is responsible to have only reasonable amount of tags and/or rows in each feature file.",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
