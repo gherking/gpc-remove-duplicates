@@ -1,32 +1,18 @@
 import { PreCompiler } from "gherking";
-import { Tag, Feature, Scenario, ScenarioOutline, Rule, Examples, Document, Element } from "gherkin-ast";
+import { Tag, Feature, Scenario, ScenarioOutline, Rule, Examples, Document, DataTable, Step } from "gherkin-ast";
 import { RemoveDuplicatesOptions } from "./types";
-import { removeDuplicates } from "./tag-set";
+import * as tagSet from "./tag-set";
+import * as rowSet from "./row-set";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const debug = require("debug")("gpc:remove-duplicates");
 
 const DEFAULT_CONFIG: RemoveDuplicatesOptions = {
     processRows: false,
     processTags: true,
-    verbose: true,
-};
-
-type Logger = (...message: string[]) => void;
-
-const getLogger = (name: string, enabled: boolean, verbose: boolean): Logger => {
-    if (!verbose) {
-        return () => null;
-    }
-    if (enabled) {
-        return console.log.bind(null, `[${name}]`);
-    }
-    return console.warn.bind(null, `[${name}]`);
 };
 
 class RemoveDuplicates implements PreCompiler {
     private options: RemoveDuplicatesOptions;
-    private tagLogger: Logger;
-    private rowLogger: Logger;
 
     private featureTags: Tag[];
     private ruleTags: { [key: string]: Tag[] };
@@ -36,12 +22,53 @@ class RemoveDuplicates implements PreCompiler {
             ...DEFAULT_CONFIG,
             ...(options || {}),
         };
+    }
 
-        this.tagLogger = getLogger('tag', this.options.processTags, this.options.verbose);
-        this.rowLogger = getLogger('row', this.options.processRows, this.options.verbose);
+    public handleElementTags(e: Scenario | ScenarioOutline | Examples | Rule, p?: Feature | Rule, ...tagsToIgnore: Tag[]): void {
+        /* istanbul ignore next */
+        debug('handleElementTags(e: %s, p: %s, toIgnore: %d)', e?.constructor.name, p?.constructor.name, tagsToIgnore.length);
+        if (!this.options.processTags) {
+            debug('...tags not processed')
+            return;
+        }
+
+        debug('...tags: %o', e.tags);
+        e.tags = tagSet.removeDuplicates(e.tags, ...this.featureTags);
+        debug('...tags after deduplicate with feature tags: %o', e.tags);
+
+        if (!!p && p instanceof Rule && this.ruleTags[p._id]) {
+            debug('...rule tags: %o', this.ruleTags[p._id]);
+            e.tags = tagSet.removeDuplicates(e.tags, ...this.ruleTags[p._id]);
+            debug('...tags after deduplicate with rule tags: %o', e.tags);
+        }
+
+        if (tagsToIgnore.length) {
+            debug('...ignored tags: %o', tagsToIgnore);
+            e.tags = tagSet.removeDuplicates(e.tags, ...tagsToIgnore);
+            debug('...tags after deduplicate with ignored tags: %o', e.tags);
+        }
+    }
+
+    public handleTableRows(e: DataTable | Examples): void {
+        /* istanbul ignore next */
+        debug('handleTableRows(e: %s)', e?.constructor.name);
+        if (!this.options.processRows) {
+            debug('...rows not processed')
+            return;
+        }
+        if (e instanceof DataTable) {
+            debug('...data table rows: %o', e.rows);
+            e.rows = rowSet.removeDuplicates(e.rows);
+            debug('...data table rows after deduplicate: %o', e.rows);
+        } else if (e instanceof Examples) {
+            debug('...example rows: %o', e.body);
+            e.body = rowSet.removeDuplicates(e.body);
+            debug('...example rows after deduplicate: %o', e.body);
+        }
     }
 
     public onFeature(f: Feature, _1: Document, _2: number): void {
+        /* istanbul ignore next */
         debug('onFeature(f: %s)', f?.constructor.name);
         if (!this.options.processTags) {
             debug('...tags not processed')
@@ -49,52 +76,51 @@ class RemoveDuplicates implements PreCompiler {
         }
 
         debug('...tags: %o', f.tags);
-        // 1. remove duplicate tags from the feature tags
-        f.tags = removeDuplicates(f.tags || []);
+        f.tags = tagSet.removeDuplicates(f.tags);
         debug('...tags after deduplicate: %o', f.tags);
-        // 2. store the tags of the feature to use for subsequent items
-        this.featureTags = f.tags || [];
-        // 3. clearing the rule tags
+
+        this.featureTags = f.tags;
         this.ruleTags = {};
         debug('...{featureTags: %o, ruleTags: %o}', this.featureTags, this.ruleTags);
     }
 
-    public onRule(r: Rule, _1: Feature, _2: number): void {
-        if (!this.options.processTags) {
-            return;
-        }
-
-        // 4. removing duplicate tags from the rule tags (incl. feature tags)
-        r.tags = removeDuplicates(r.tags || [], ...this.featureTags);
-        this.ruleTags[r._id] = r.tags || [];
-    }
-
-    public handleElementTags(e: Scenario | ScenarioOutline | Examples, p: Feature | Rule): void {
-        // 5. removing duplicate tags from the scenario tags (incl. feature tags)
-        e.tags = removeDuplicates(e.tags || [], ...this.featureTags);
-        if (p instanceof Rule) {
-            // 6. removing duplicate tags comparing the rule tags
-            e.tags = removeDuplicates(e.tags, ...this.ruleTags[p._id]);
-        }
+    public onRule(r: Rule, f: Feature, _2: number): void {
+        /* istanbul ignore next */
+        debug('onRule(r: %s, f: %s)', r?.constructor.name, f?.constructor.name);
+        this.handleElementTags(r, f);
+        this.ruleTags[r._id] = r.tags;
+        debug('...{ruleTags: %o}', this.ruleTags);
     }
 
     public onScenario(s: Scenario, p: Feature | Rule, _1: number): void {
-        if (!this.options.processTags) {
-            return;
-        }
+        /* istanbul ignore next */
+        debug('onScenario(s: %s, p: %s)', s?.constructor.name, p?.constructor.name);
         this.handleElementTags(s, p);
     }
 
     public onScenarioOutline(so: ScenarioOutline, p: Feature | Rule, _1: number): void {
-        if (!this.options.processTags) {
-            return;
-        }
+        /* istanbul ignore next */
+        debug('onScenarioOutline(so: %s, p: %s)', so?.constructor.name, p?.constructor.name);
         this.handleElementTags(so, p);
 
         for (const e of so.examples) {
+            /* istanbul ignore next */
+            debug('(pseudo)onExamples(e: %s, so: %s)', e?.constructor.name, so?.constructor.name);
             this.handleElementTags(e, p);
-            e.tags = removeDuplicates(e.tags, ...so.tags);
+            this.handleElementTags(e, null, ...so.tags);
         }
+    }
+
+    public onDataTable(t: DataTable, _1: Step): void {
+        /* istanbul ignore next */
+        debug('onDataTable(t: %s)', t?.constructor.name);
+        this.handleTableRows(t);
+    }
+
+    public onExamples(e: Examples, _1: ScenarioOutline, _2: number): void {
+        /* istanbul ignore next */
+        debug('onExamples(e: %s)', e?.constructor.name);
+        this.handleTableRows(e);
     }
 }
 
