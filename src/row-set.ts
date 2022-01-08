@@ -11,7 +11,7 @@ export function removeDuplicates(rows: TableRow[]): TableRow[] {
 export class TableRowSet extends ObjectSetType<TableRow> {
   public equals(a: TableRow, b: TableRow): boolean {
     return !!a && !!b
-      && a.cells.length == b.cells.length
-      && a.cells.every((c, i) => b.cells[i].value == c.value);
+      && a.cells.length === b.cells.length
+      && a.cells.every((c, i) => b.cells[i].value === c.value);
   }
 }
