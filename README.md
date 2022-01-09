@@ -11,14 +11,14 @@ This repository is a remove-duplicates to create precompilers for GherKing.
 const compiler = require('gherking');
 const RemoveDuplicates = require('gpc-remove-duplicates');
 
-let ast = compiler.load('./features/src/login.feature');
+let ast = await compiler.load('./features/src/login.feature');
 ast = compiler.process(
     ast,
     new RemoveDuplicates({
         // config
     })
 );
-compiler.save('./features/dist/login.feature', ast, {
+await compiler.save('./features/dist/login.feature', ast, {
     lineBreak: '\r\n'
 });
 ```
@@ -26,16 +26,16 @@ compiler.save('./features/dist/login.feature', ast, {
 ```typescript
 'use strict';
 import {load, process, save} from "gherking";
-import {remove-duplicates} from "gpc-remove-duplicates";
+import RemoveDuplicates from "gpc-remove-duplicates";
 
-let ast = load("./features/src/login.feature");
+let ast = await load("./features/src/login.feature");
 ast = process(
     ast,
     new RemoveDuplicates({
         // config
     })
 );
-save('./features/dist/login.feature', ast, {
+await save('./featuresdist/login.feature', ast, {
     lineBreak: '\r\n'
 });
 ```
