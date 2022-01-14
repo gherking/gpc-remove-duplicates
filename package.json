@@ -1,7 +1,7 @@
 {
   "name": "gpc-remove-duplicates",
   "version": "1.0.0",
-  "description": "This GherKing Precompiler is responsible to have only reasonable amount of tags and/or rows in each feature file.",
+  "description": "This GherKing Precompiler is responsible for having only a reasonable amount of tags and/or rows in each feature file.",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -52,12 +52,12 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^26.4.4",
     "typedoc": "^0.22.10",
-    "typescript": "^4.5.4"
+    "typescript": "4.4.4"
   },
   "dependencies": {
     "debug": "^4.3.1",
     "gherkin-ast": "^3.2.1",
-    "gherking": "1.0.0-beta.8",
+    "gherking": "1.0.0-beta.6",
     "object-set-type": "^2.1.2"
   },
   "jest": {

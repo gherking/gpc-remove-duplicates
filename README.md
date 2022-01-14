@@ -2,8 +2,6 @@
 
 ![Downloads](https://img.shields.io/npm/dw/gpc-remove-duplicates?style=flat-square) ![Version@npm](https://img.shields.io/npm/v/gpc-remove-duplicates?label=version%40npm&style=flat-square) ![Version@git](https://img.shields.io/github/package-json/v/gherking/gpc-remove-duplicates/master?label=version%40git&style=flat-square) ![CI](https://img.shields.io/github/workflow/status/gherking/gpc-remove-duplicates/CI/master?label=ci&style=flat-square) ![Docs](https://img.shields.io/github/workflow/status/gherking/gpc-remove-duplicates/Docs/master?label=docs&style=flat-square)
 
-This repository is a remove-duplicates to create precompilers for GherKing.
-
 ## Usage
 
 ```javascript
@@ -40,9 +38,9 @@ await save('./featuresdist/login.feature', ast, {
 });
 ```
 
-The RemoveDuplicates precompiler is responsible to have only reasonable amount of tags and/or rows in each feature file.
+The RemoveDuplicates precompiler is responsible for having only a reasonable amount of tags and/or rows in each feature file.
 
-It can proceed the following actions:
+It can proceed with the following actions:
 1. Removes tags from Rule/Scenario/ScenarioOutline/Examples which exists on parent (Feature/Rule/ScenarioOutline) too.
 1. Removes duplicate tags from Feature/Rule/Scenario/ScearioOutline/Examples.
 1. Removes duplicate rows from Examples and step DataTables.
@@ -53,7 +51,7 @@ RemoveDuplicateRows accepts the following configuration:
 
 | Option | Type | Description | Default |
 |:------:|:----:|:------------|:--------|
-| `processTags` | `boolean` | It indicates whether the 1st and 2nd option should be applied. | `true` |
+| `processTags` | `boolean` | It indicates whether the 1st and 2nd options should be applied. | `true` |
 | `processRows` | `boolean` | It indicates whether the 3rd option should be applied. | `false` |
 
 ## Other
